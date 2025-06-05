@@ -1,0 +1,397 @@
+:root {
+    --primary-green: #0f9d58; /* Google Green */
+    --secondary-green: #0d652d; /* Dark Green */
+    --light-green: #e8f5e9; /* Light Green */
+    --dark-green: #0b5726; /* Very Dark Green */
+    --background: #f1f8e9; /* Light Green Background */
+    --card-background: #ffffff; /* White */
+    --text-primary: #2d5016; /* Dark Green Text */
+    --text-secondary: #5f6368; /* Gray */
+    --border-color: #c8e6c9; /* Light Green Border */
+}
+
+body {
+    font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+}
+
+/* Classroom Styling */
+.classroom-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.classroom-header {
+    background: linear-gradient(135deg, #0f9d58 0%, #0d652d 100%);
+    color: white;
+    padding: 16px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.classroom-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+.classroom-nav {
+    background-color: hsl(var(--card-background));
+    border-bottom: 1px solid hsl(var(--border-color));
+    padding: 0 16px;
+}
+
+.classroom-nav .nav-link {
+    color: hsl(var(--text-secondary));
+    border: none;
+    padding: 12px 24px;
+    font-weight: 500;
+    border-radius: 0;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.classroom-nav .nav-link.active {
+    color: var(--primary-green);
+    border-bottom-color: var(--primary-green);
+    background: none;
+}
+
+.classroom-nav .nav-link:hover {
+    color: var(--dark-green);
+    background-color: var(--light-green);
+}
+
+.classroom-content {
+    flex: 1;
+    padding: 24px 0;
+    background-color: var(--background);
+}
+
+/* Sidebar */
+.sidebar-card {
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* Share Box */
+.share-box {
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    background-color: hsl(var(--text-secondary));
+    border-radius: 50%;
+}
+
+.share-box .form-control {
+    border: none;
+    background-color: hsl(var(--background));
+    border-radius: 24px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+}
+
+.share-box .form-control:focus {
+    box-shadow: none;
+    border: none;
+    background-color: hsl(var(--background));
+}
+
+/* Stream Info */
+.stream-info {
+    background: hsl(var(--card-background));
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid hsl(var(--border-color));
+}
+
+/* Assignment Cards */
+.assignments-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.assignment-card {
+    background: hsl(var(--card-background));
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid hsl(var(--border-color));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.assignment-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.assignment-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.assignment-title {
+    color: hsl(var(--text-primary));
+    font-weight: 500;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.assignment-desc {
+    color: hsl(var(--text-secondary));
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.assignment-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.assignment-score {
+    display: flex;
+    align-items: center;
+    color: hsl(var(--text-secondary));
+    font-weight: 500;
+}
+
+.score {
+    font-size: 0.875rem;
+}
+
+/* Game and Category Page Styling */
+.game-container, .category-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-header, .category-header {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+    color: white;
+    padding: 16px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.category-content {
+    flex: 1;
+    padding: 24px 0;
+    background-color: var(--background);
+    overflow-y: auto;
+}
+
+.game-card {
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+.game-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.game-card-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.game-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-green);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.game-info {
+    flex: 1;
+}
+
+.game-title {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+}
+
+.game-desc {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.game-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.game-content {
+    flex: 1;
+    position: relative;
+}
+
+.game-frame-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.game-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Admin Styling */
+.admin-login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, hsl(var(--primary-green)) 0%, hsl(var(--secondary-green)) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-container {
+    min-height: 100vh;
+    background-color: hsl(var(--background));
+    padding: 20px 0;
+}
+
+.admin-header {
+    background: hsl(var(--card-background));
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid hsl(var(--border-color));
+    margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .classroom-content {
+        padding: 16px;
+    }
+    
+    .classroom-nav .nav-link {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
+    
+    .assignment-card {
+        padding: 16px;
+    }
+    
+    .sidebar-card {
+        margin-bottom: 16px;
+    }
+}
+
+/* Utility Classes */
+.text-success {
+    color: var(--primary-green) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-green) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-green);
+    border-color: var(--dark-green);
+}
+
+.btn-outline-primary {
+    color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-green) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--secondary-green) !important;
+}
+
+/* Form Styling */
+.form-control:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(15, 157, 88, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+/* Card Styling */
+.card {
+    border: 1px solid hsl(var(--border-color));
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border-color));
+    font-weight: 500;
+}

@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}CarterHub Chat{% endblock %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<style>
+.discord-container {
+    height: 100vh;
+    background-color: #36393f;
+    color: #dcddde;
+    display: flex;
+    flex-direction: column;
+}
+
+.discord-header {
+    background-color: #2f3136;
+    padding: 10px 20px;
+    border-bottom: 1px solid #202225;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.discord-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.discord-sidebar {
+    width: 240px;
+    background-color: #2f3136;
+    border-right: 1px solid #202225;
+    display: flex;
+    flex-direction: column;
+}
+
+.discord-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #36393f;
+}
+
+.chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.message-input-area {
+    padding: 20px;
+    background-color: #40444b;
+    border-top: 1px solid #202225;
+}
+
+.sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid #202225;
+}
+
+.sidebar-section h6 {
+    color: #8e9297;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.user-item, .friend-item, .group-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-item:hover, .friend-item:hover, .group-item:hover {
+    background-color: #34373c;
+}
+
+.user-item.active, .friend-item.active, .group-item.active {
+    background-color: #5865f2;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: auto;
+}
+
+.status-online { background-color: #3ba55c; }
+.status-offline { background-color: #747f8d; }
+
+.message {
+    margin-bottom: 16px;
+}
+
+.message-header {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 4px;
+}
+
+.message-username {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.message-timestamp {
+    font-size: 12px;
+    color: #72767d;
+}
+
+.message-content {
+    line-height: 1.375;
+}
+
+.message.own-message .message-username {
+    color: #5865f2;
+}
+
+.search-box {
+    background-color: #40444b;
+    border: none;
+    border-radius: 4px;
+    color: #dcddde;
+    padding: 8px 12px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.search-box:focus {
+    outline: none;
+    background-color: #484c52;
+}
+
+.btn-discord {
+    background-color: #5865f2;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-discord:hover {
+    background-color: #4752c4;
+}
+
+.btn-discord-success {
+    background-color: #3ba55c;
+}
+
+.btn-discord-success:hover {
+    background-color: #2d8a47;
+}
+
+.btn-discord-danger {
+    background-color: #ed4245;
+}
+
+.btn-discord-danger:hover {
+    background-color: #c73639;
+}
+
+.search-results {
+    background-color: #40444b;
+    border-radius: 4px;
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 12px;
+    border-bottom: 1px solid #2f3136;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="discord-container">
+    <!-- Header -->
+    <div class="discord-header">
+        <div class="d-flex align-items-center">
+            <h5 class="mb-0 me-3">
+                <i class="fas fa-comments me-2"></i>CarterHub Chat
+            </h5>
+            <span class="badge bg-success">{{ user.username }}</span>
+        </div>
+        <div>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm me-2">
+                <i class="fas fa-home me-1"></i>Hub
+            </a>
+            <a href="{{ url_for('chat_logout') }}" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="discord-content">
+        <!-- Sidebar -->
+        <div class="discord-sidebar">
+            <!-- Friends Section -->
+            <div class="sidebar-section">
+                <h6>Friends</h6>
+                <div id="friends-list">
+                    {% for friend in friends %}
+                    <div class="friend-item" data-user-id="{{ friend.id }}" onclick="openPrivateChat({{ friend.id }}, '{{ friend.username }}')">
+                        <i class="fas fa-user me-2"></i>
+                        <span>{{ friend.username }}</span>
+                        <div class="status-indicator {{ 'status-online' if friend.is_online else 'status-offline' }}"></div>
+                    </div>
+                    {% endfor %}
+                    {% if not friends %}
+                    <p class="text-muted small mb-0">No friends yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Friend Requests -->
+            {% if pending_requests %}
+            <div class="sidebar-section">
+                <h6>Friend Requests</h6>
+                {% for request in pending_requests %}
+                <div class="friend-item">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <span>{{ request.sender.username }}</span>
+                    <div class="ms-auto">
+                        <a href="{{ url_for('respond_friend_request', request_id=request.id, action='accept') }}" 
+                           class="btn btn-sm btn-discord-success me-1">
+                            <i class="fas fa-check"></i>
+                        </a>
+                        <a href="{{ url_for('respond_friend_request', request_id=request.id, action='reject') }}" 
+                           class="btn btn-sm btn-discord-danger">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Groups Section -->
+            <div class="sidebar-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Groups</h6>
+                    <button class="btn btn-sm btn-discord" onclick="showCreateGroupModal()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div id="groups-list">
+                    {% for group in groups %}
+                    <div class="group-item d-flex justify-content-between align-items-center" data-group-id="{{ group.id }}">
+                        <div onclick="openGroupChat({{ group.id }}, '{{ group.name }}')" style="flex: 1; cursor: pointer;">
+                            <i class="fas fa-users me-2"></i>
+                            <span>{{ group.name }}</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); showAddToGroupModal({{ group.id }}, '{{ group.name }}')" title="Add friends to group">
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% if not groups %}
+                    <p class="text-muted small mb-0">No groups yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Search Users -->
+            <div class="sidebar-section">
+                <h6>Add Friends</h6>
+                <input type="text" class="search-box" id="user-search" placeholder="Search users...">
+                <div id="search-results" class="search-results" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="discord-main">
+            <div class="chat-area" id="chat-area">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <h5>Welcome to CarterHub Chat!</h5>
+                    <p>Select a friend or group to start chatting</p>
+                </div>
+            </div>
+
+            <div class="message-input-area" id="message-input-area" style="display: none;">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="message-input" placeholder="Type your message..." disabled>
+                    <button class="btn btn-discord" id="send-button" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Create New Group</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm">
+                    <div class="mb-3">
+                        <label for="groupName" class="form-label">Group Name</label>
+                        <input type="text" class="form-control bg-secondary text-light border-secondary" id="groupName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="groupDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control bg-secondary text-light border-secondary" id="groupDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-discord" onclick="createGroup()">Create Group</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Group Modal -->
+<div class="modal fade" id="addToGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Invite Friends to <span id="groupNameDisplay"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Click "Invite" to send a group invitation to your friend via DM. They can accept with /accept or decline with /decline.
+                </p>
+                <div id="friendsToAdd">
+                    <!-- Friends list will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

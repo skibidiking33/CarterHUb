@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}CarterHub - Gaming Hub{% endblock %}
+
+{% block content %}
+<div class="classroom-container">
+    <!-- Header -->
+    <header class="classroom-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <button class="btn btn-link text-white" type="button">
+                        <i class="fas fa-bars fs-4"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <h1 class="classroom-title mb-0">CarterHub</h1>
+                </div>
+                <div class="col-auto">
+                    <a href="https://classroom.google.com" target="_blank" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-external-link-alt me-2"></i>Google Classroom
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="classroom-nav">
+        <div class="container-fluid">
+            <ul class="nav nav-tabs border-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-stream me-2"></i>Categories
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="classroom-content">
+        <div class="container">
+            <div class="row">
+                <!-- Left Sidebar -->
+                <div class="col-md-3">
+                    <div class="sidebar-card">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-calendar-check me-2"></i>Upcoming
+                        </h6>
+                        <p class="text-muted small mb-3">Great job! No games due soon!</p>
+                        <a href="#" class="text-decoration-none small">View all</a>
+                    </div>
+                </div>
+
+                <!-- Main Stream -->
+                <div class="col-md-9">
+                    <!-- Share Box -->
+                    <div class="share-box mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-placeholder me-3"></div>
+                            <input type="text" class="form-control" placeholder="Share something with your class..." readonly>
+                        </div>
+                    </div>
+
+                    <!-- Stream Info -->
+                    <div class="stream-info mb-4">
+                        <h5 class="text-success mb-2">
+                            <i class="fas fa-eye me-2"></i>View game categories and connect with your gaming hub here
+                        </h5>
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            <span>See when new games are posted</span>
+                        </div>
+                    </div>
+
+                    <!-- Game Categories -->
+                    <div class="assignments-container">
+                        {% for category in categories %}
+                        <div class="assignment-card" onclick="openCategory({{ category.id }}, {{ category.is_chat|tojson }})">
+                            <div class="d-flex align-items-start">
+                                <div class="assignment-icon me-3">
+                                    {% if category.is_chat %}
+                                        <i class="fas fa-comments"></i>
+                                    {% else %}
+                                        <i class="fas fa-gamepad"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="assignment-title mb-1">{{ category.title }}</h6>
+                                    <p class="assignment-desc mb-2">{{ category.description }}</p>
+                                    <div class="assignment-meta">
+                                        <span class="text-muted small">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ category.created_at.strftime('%b %d') }}
+                                        </span>
+                                        {% if not category.is_chat %}
+                                        <span class="badge bg-success ms-2">
+                                            <i class="fas fa-paperclip me-1"></i>Game Attached
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-primary ms-2">
+                                            <i class="fas fa-comments me-1"></i>Chat Room
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="assignment-score">
+                                    {% if not category.is_chat %}
+                                    <span class="score">-/100</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if not categories %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-gamepad fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No game categories available</h5>
+                            <p class="text-muted">Ask your administrator to add some games!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openCategory(categoryId, isChat) {
+    if (isChat) {
+        window.location.href = `/chat_login`;
+    } else {
+        window.location.href = `/category/${categoryId}`;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.title }} - CarterHub{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <!-- Category Header -->
+    <div class="category-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <button onclick="goBack()" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </button>
+                </div>
+                <div class="col">
+                    <h3 class="mb-0">{{ category.title }}</h3>
+                    <p class="mb-0 text-light opacity-75">{{ category.description }}</p>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-gamepad me-1"></i>{{ games|length }} Games
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="category-content">
+        <div class="container">
+            {% if games %}
+            <div class="row">
+                {% for game in games %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="game-card" onclick="openGame({{ game.id }})">
+                        <div class="game-card-header">
+                            <div class="game-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <div class="game-info">
+                                <h6 class="game-title">{{ game.title }}</h6>
+                                <p class="game-desc">{{ game.description }}</p>
+                            </div>
+                        </div>
+                        <div class="game-card-footer">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ game.created_at.strftime('%b %d') }}
+                            </span>
+                            <span class="badge bg-success">
+                                <i class="fas fa-play me-1"></i>Play
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-gamepad fa-3x text-muted mb-3"></i>
+                <h4>No Games Available</h4>
+                <p class="text-muted">This category doesn't have any games yet. Check back later!</p>
+                <button onclick="goBack()" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function openGame(gameId) {
+    window.location.href = `/game/${gameId}`;
+}
+
+function goBack() {
+    window.location.href = "{{ url_for('index') }}";
+}
+</script>
+{% endblock %}

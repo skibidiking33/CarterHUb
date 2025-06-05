@@ -5,7 +5,7 @@ echo "🚀 Deploying CarterHub..."
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-pip install flask flask-socketio flask-sqlalchemy gunicorn
+pip install -r requirements.txt
 
 # Run database migrations (if needed)
 echo "🗄️ Setting up database..."
